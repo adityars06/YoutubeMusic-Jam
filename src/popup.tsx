@@ -25,7 +25,7 @@ const Popup = () => {
     return (
         <div>
             <button
-                className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                className="bg-red-500 text-white py-2 px-4 rounded-lg"
                 onClick={toggleModal}
             >
                 Open Session Modal
@@ -71,7 +71,7 @@ const Popup = () => {
                                 className="border p-2 mb-4 w-full rounded-lg"
                             />
                             <button
-                                className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full"
+                                className="bg-red-500 text-white py-2 px-4 rounded-lg w-full"
                                 onClick={handleJoinSession}
                             >
                                 Join Session
