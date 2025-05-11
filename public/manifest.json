@@ -3,28 +3,35 @@
   "name": "Youtube-Party",
   "version": "1.0.0",
   "description": "Enables jamming for premium users",
-  "content_scripts": [
-    {
-      "matches": ["https://www.youtube.com/*"],
-      "js": ["content.js"]
-    }
-  ],
+
   "permissions": [
     "identity",
     "storage",
     "scripting",
     "activeTab"
   ],
+
   "host_permissions": [
     "https://www.youtube.com/*",
     "https://music.youtube.com/*"
   ],
+
   "background": {
     "service_worker": "background.js"
   },
+
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+
   "action": {
-  "default_popup": "popup.html"
-},
+    "default_popup": "popup.html"
+  },
+
+
   "web_accessible_resources": [
     {
       "resources": ["images/*"],
