@@ -22,6 +22,20 @@ const sendAction = (action: string, data?: any) => {
     chrome.runtime.sendMessage({type: "PLAYER_ACTION", action, data});
 }
 
+const observeTitleChanges = (targetNode: Element) => {
+  let lastTitle = targetNode.textContent?.trim();
+
+  const observer = new MutationObserver(() => {
+    const currentTitle = targetNode.textContent?.trim();
+    if (currentTitle && currentTitle !== lastTitle) {
+      lastTitle = currentTitle;
+      sendAction('songInfo', { title: currentTitle });
+    }
+  });
+
+  observer.observe(targetNode, { childList: true, subtree: true });
+};
+
 const attachPlayerListeners = async () => {
     try {
       const playPauseBtn = await waitforElement('#play-pause-button');
@@ -54,6 +68,7 @@ const attachPlayerListeners = async () => {
         sendAction('songInfo', { title });
       };
       sendSongInfo();
+      observeTitleChanges(titleEl);
   
     } catch (error) {
       console.error('[YouTube Music Controller] Error:', error);
