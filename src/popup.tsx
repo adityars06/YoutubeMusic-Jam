@@ -7,16 +7,48 @@ const Popup = () => {
 
     const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+    const generateCode=()=>{
+        const alphanumerics: string[] = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g',
+        'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u',
+        'v', 'w', 'x', 'y', 'z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+        ];
+    let roomId:string='';
+    for(let i=0;i<=5;i++){
+        let index = Math.floor(Math.random() * 36);
+        roomId+=alphanumerics[index];
+    }
+    return roomId
+    }
+
     const handleCreateSession = () => {
         // Logic to create a session 
-        const newSessionCode = "ABC123"; // Replace with API
+        let newSessionCode=generateCode();
+        chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
+            if(tabs[0].id){
+                chrome.tabs.sendMessage(tabs[0].id,{
+                    type:'JOIN_ROOM',
+                    roomId:newSessionCode
+                })
+            }
+        })
         setGeneratedCode(newSessionCode);
     };
 
     const handleJoinSession = () => {
         if (sessionCode.trim()) {
-            // Call API 
+            chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
+            if(tabs[0].id){
+                chrome.tabs.sendMessage(tabs[0].id,{
+                    type:'JOIN_ROOM',
+                    roomId:sessionCode
+                })
+            }
             console.log(`Joining session with code: ${sessionCode}`);
+        })
+            
         } else {
             console.error("Session code is required to join a session.");
         }
