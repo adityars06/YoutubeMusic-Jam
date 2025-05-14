@@ -1,3 +1,22 @@
+import { io} from "socket.io-client";
+
+const socket= io("http://localhost:3000");
+
+socket.on('connect',()=>{
+  console.log('client is connected');
+})
+
+
+
+chrome.runtime.onMessage.addListener(
+  (message: any, _sender: chrome.runtime.MessageSender, _sendResponse: (response?: any) => void): void => {
+    if (message.type === 'JOIN_ROOM') {
+      const roomId: string = message.roomId;
+      console.log('Joining socket room:', roomId);
+      socket.emit('join-room', roomId);
+    }
+  }
+);
 const waitforElement = (selector: string, timeout = 10000): Promise<Element> => {
     return new Promise((resolve, reject) => {
         const interval = 100;
@@ -46,26 +65,34 @@ const attachPlayerListeners = async () => {
       playPauseBtn.addEventListener('click', () => {
         const isPlaying = playPauseBtn.getAttribute('title')?.toLowerCase().includes('pause');
         sendAction(isPlaying ? 'pause' : 'play');
+        let playAction:string=isPlaying?'pause' : 'play';
+        if(playAction){
+          socket.emit('PLAYER_ACTION',playAction)
+        }
       });
   
       nextBtn.addEventListener('click', () => {
         sendAction('next');
+        socket.emit('PLAYER_ACTION','next')
       });
 
       prevBtn.addEventListener('click', () => {
         sendAction('prev');
+        socket.emit('PLAYER_ACTION','prev')
       });
 
       const audio = document.querySelector('audio');
       if (audio) {
         audio.addEventListener('seeked', () => {
           sendAction('seeked', { currentTime: audio.currentTime });
+          socket.emit('PLAYER_ACTION',{ currentTime: audio.currentTime })
         });
       }
 
       const sendSongInfo = () => {
         const title = titleEl?.textContent?.trim() ?? '';
         sendAction('songInfo', { title });
+        socket.emit('PLAYER_ACTION',{title})
       };
       sendSongInfo();
       observeTitleChanges(titleEl);
