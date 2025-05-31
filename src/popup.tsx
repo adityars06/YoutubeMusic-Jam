@@ -23,36 +23,9 @@
 //     return roomId
 //     }
 
-//     const handleCreateSession = () => {
-//         // Logic to create a session 
-//         let newSessionCode=generateCode();
-//         chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
-//             if(tabs[0].id){
-//                 chrome.tabs.sendMessage(tabs[0].id,{
-//                     type:'JOIN_ROOM',
-//                     roomId:newSessionCode
-//                 })
-//             }
-//         })
-//         setGeneratedCode(newSessionCode);
-//     };
+    
 
-//     const handleJoinSession = () => {
-//         if (sessionCode.trim()) {
-//             chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
-//             if(tabs[0].id){
-//                 chrome.tabs.sendMessage(tabs[0].id,{
-//                     type:'JOIN_ROOM',
-//                     roomId:sessionCode
-//                 })
-//             }
-//             console.log(`Joining session with code: ${sessionCode}`);
-//         })
-            
-//         } else {
-//             console.error("Session code is required to join a session.");
-//         }
-//     };
+    
 
 //     return (
 //         <div>
@@ -131,14 +104,48 @@ const YouTubeJam = () => {
   const [sessionCode, setSessionCode] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
 
+//   const handleCreateSession = () => {
+//     const newSessionCode = Math.random().toString(36).substring(2, 8);
+//     setGeneratedCode(newSessionCode);
+//   };
+
   const handleCreateSession = () => {
-    const newCode = Math.random().toString(36).substring(2, 8);
-    setGeneratedCode(newCode);
-  };
+        // Logic to create a session 
+        const newSessionCode = Math.random().toString(36).substring(2, 8);
+        setGeneratedCode(newSessionCode);
+        chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
+            if(tabs[0].id){
+                chrome.tabs.sendMessage(tabs[0].id,{
+                    type:'JOIN_ROOM',
+                    roomId:newSessionCode
+                })
+            }
+        })
+        setGeneratedCode(newSessionCode);
+    };
 
   const handleJoinSession = () => {
-    alert(`Joining session: ${sessionCode}`);
-  };
+        if (sessionCode.trim()) {
+            chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
+            if(tabs[0].id){
+                chrome.tabs.sendMessage(tabs[0].id,{
+                    type:'JOIN_ROOM',
+                    roomId:sessionCode
+                })
+            }
+            alert(`Joining session: ${sessionCode}`);
+            console.log(`Joining session with code: ${sessionCode}`);
+        })
+            
+        } else {
+            console.error("Session code is required to join a session.");
+            alert("enter a valid session code")
+        }
+    };
+
+//   const handleJoinSession = () => {
+    
+//   };
 
   return (
     <div>

@@ -35,8 +35,8 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["images/*"],
-      "matches": ["<all_urls>"]
+      "resources": ["injected.js"],
+      "matches": ["<all_urls>","https://music.youtube.com/*"]
     }
   ]
 }
