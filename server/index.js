@@ -20,7 +20,7 @@ io.on('connection', (socket) => {
         console.log(`${roomId} - ${socket}`);
     });
     socket.on('PLAYER_ACTION', (msg) => {
-        io.to(id).emit('chain-of-action', msg);
+        socket.to(id).emit('chain-of-action', msg);
     });
     socket.on("VIDEO_ID",(msg)=>{
         const {videoId}= msg;
