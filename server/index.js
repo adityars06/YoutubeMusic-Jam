@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
     });
     socket.on("VIDEO_ID",(msg)=>{
         const {videoId}= msg;
-        io.to(id).emit('VIDEO_ID',videoId)
+        socket.to(id).emit('VIDEO_ID',videoId)
         console.log(videoId)
     })
 });
