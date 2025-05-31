@@ -1,6 +1,8 @@
 import { io} from "socket.io-client";
 
 let sendmessage:boolean=true;
+let sendVideoMessage:boolean=true;
+let currentVideoId:String|null=null;
 
 //blocking window reload-didnt work
 window.onbeforeunload = null;
@@ -31,7 +33,7 @@ socket.on('chain-of-action',(msg:any)=>{
 
 socket.on('VIDEO_ID',(videoId:any)=>{
   console.log(videoId)
-  const currentVideoId = new URLSearchParams(window.location.search).get("v");
+  sendVideoMessage=false;
 
 if (currentVideoId !== videoId) {
   console.log("Navigating to new song:", videoId);
@@ -41,6 +43,7 @@ if (currentVideoId !== videoId) {
 }
   const roomId:any=localStorage.getItem('roomId')
   socket.emit('join-room', roomId);
+  sendVideoMessage=true;
 })
 
 
@@ -70,7 +73,11 @@ window.addEventListener("message", (event: MessageEvent) => {
   console.log("🎯 Intercepted video ID:", videoId);
 
   // You can now send this to the backend using socket.io
-  socket.emit("VIDEO_ID", { videoId, payload: full });
+  if(sendVideoMessage){
+    socket.emit("VIDEO_ID", { videoId, payload: full });
+    currentVideoId=videoId;
+  }
+  
 
   // Or store it globally for reuse
   (window as any).__ytmVideoId = videoId;
