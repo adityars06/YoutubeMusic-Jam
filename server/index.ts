@@ -15,12 +15,6 @@ const io = new Server(httpServer,{
 });
 
 
-app.get('/',(_req:any,res:any)=>{
-  res.send('hello')
-})
-
-
-
 io.on('connection',(socket:Socket)=>{
 
   let id:string="";
@@ -29,10 +23,10 @@ io.on('connection',(socket:Socket)=>{
   socket.on('join-room',(roomId:string)=>{
     socket.join(roomId);
     id=roomId;
-    console.log(`${roomId} joined`)
+    console.log(`${roomId} - ${socket.id}`)
   })
   socket.on('PLAYER_ACTION',(msg:any)=>{
-    io.to(id).emit( 'chain-of-action',msg)
+    io.to(id).emit( 'chain-of-action',msg);
   })
 })
 

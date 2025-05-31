@@ -1,22 +1,63 @@
 import { io} from "socket.io-client";
 
+//blocking window m
+window.onbeforeunload = null;
+
+
 const socket= io("http://localhost:3000");
 
 socket.on('connect',()=>{
   console.log('client is connected');
 })
 
+socket.on('chain-of-action',(msg:any)=>{
+  console.log(msg)
+})
 
+socket.on('VIDEO_ID',(videoId:any)=>{
+  console.log(videoId)
+  const currentVideoId = new URLSearchParams(window.location.search).get("v");
+
+if (currentVideoId !== videoId) {
+  console.log("Navigating to new song:", videoId);
+  window.location.href = `https://music.youtube.com/watch?v=${videoId}`;
+} else {
+  console.log("Already on the correct song:", videoId);
+}
+  const roomId:any=localStorage.getItem('roomId')
+  socket.emit('join-room', roomId);
+})
+
+
+
+window.addEventListener("load", () => {
+  const roomId:any=localStorage.getItem('roomId')
+  socket.emit('join-room', roomId);
+});
 
 chrome.runtime.onMessage.addListener(
   (message: any, _sender: chrome.runtime.MessageSender, _sendResponse: (response?: any) => void): void => {
     if (message.type === 'JOIN_ROOM') {
       const roomId: string = message.roomId;
       console.log('Joining socket room:', roomId);
+      localStorage.setItem('roomId', roomId)
       socket.emit('join-room', roomId);
     }
   }
 );
+window.addEventListener("message", (event: MessageEvent) => {
+  if (event.source !== window) return;
+  if (!event.data || event.data.source !== "ytm-sniffer") return;
+
+  const { videoId, full } = event.data.payload;
+  console.log("🎯 Intercepted video ID:", videoId);
+
+  // You can now send this to the backend using socket.io
+  socket.emit("VIDEO_ID", { videoId, payload: full });
+
+  // Or store it globally for reuse
+  (window as any).__ytmVideoId = videoId;
+});
 const waitforElement = (selector: string, timeout = 10000): Promise<Element> => {
     return new Promise((resolve, reject) => {
         const interval = 100;
@@ -101,5 +142,25 @@ const attachPlayerListeners = async () => {
       console.error('[YouTube Music Controller] Error:', error);
     }
   };
+
+const script = document.createElement("script");
+script.src = chrome.runtime.getURL("injected.js");
+(document.head || document.documentElement).appendChild(script);
+script.onload = () => script.remove(); // Optional: remove after injection
+
+// Listen for messages from injected.js
+window.addEventListener("message", (event: MessageEvent) => {
+  if (event.source !== window) return;
+
+  const data = event.data;
+  if (!data || data.source !== "ytm-sniffer") return;
+
+  const { videoId, full } = data.payload;
+  console.log("🎯 Intercepted video ID:", videoId);
+
+  // Store it globally for access from the console
+  (window as any).__ytmVideoId = videoId;
+  (window as any).__ytmPayload = full;
+});
   
   attachPlayerListeners();

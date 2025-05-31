@@ -11,21 +11,22 @@ const io = new Server(httpServer, {
         origin: '*'
     }
 });
-app.get('/', (_req, res) => {
-    res.send('hello');
-});
 io.on('connection', (socket) => {
     let id = "";
     console.log('you are now connected');
     socket.on('join-room', (roomId) => {
         socket.join(roomId);
         id = roomId;
-        console.log(`${roomId} joined`);
+        console.log(`${roomId} - ${socket}`);
     });
     socket.on('PLAYER_ACTION', (msg) => {
-        io.to(id).emit({ msg, sender: socket.id });
-        console.log(`this is the ${msg} recieved by ${socket.id}`);
+        io.to(id).emit('chain-of-action', msg);
     });
+    socket.on("VIDEO_ID",(msg)=>{
+        const {videoId}= msg;
+        io.to(id).emit('VIDEO_ID',videoId)
+        console.log(videoId)
+    })
 });
 httpServer.listen(port, () => {
     console.log("listening on port 3000");
