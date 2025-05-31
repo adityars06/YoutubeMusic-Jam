@@ -3,6 +3,7 @@ import { io} from "socket.io-client";
 let sendmessage:boolean=true;
 let sendVideoMessage:boolean=true;
 let currentVideoId:String|null=null;
+let start:number;
 
 //blocking window reload-didnt work
 window.onbeforeunload = null;
@@ -35,9 +36,11 @@ socket.on('VIDEO_ID',(videoId:any)=>{
   console.log(videoId)
   sendVideoMessage=false;
 
+
 if (currentVideoId !== videoId) {
   console.log("Navigating to new song:", videoId);
   window.location.href = `https://music.youtube.com/watch?v=${videoId}`;
+  start= Date.now();
 } else {
   console.log("Already on the correct song:", videoId);
 }
@@ -74,7 +77,10 @@ window.addEventListener("message", (event: MessageEvent) => {
 
   // You can now send this to the backend using socket.io
   if(sendVideoMessage){
-    socket.emit("VIDEO_ID", { videoId, payload: full });
+    if(Date.now()-start<4000){
+      socket.emit("VIDEO_ID", { videoId, payload: full });
+    }
+    
     currentVideoId=videoId;
   }
   
@@ -142,6 +148,7 @@ const attachPlayerListeners = async () => {
       nextBtn.addEventListener('click', () => {
         // sendAction('next');
         // socket.emit('PLAYER_ACTION','next')
+        start=Date.now();
       });
 
       prevBtn.addEventListener('click', () => {
