@@ -1,5 +1,7 @@
 import { io} from "socket.io-client";
 
+let sendmessage:boolean=true;
+
 //blocking window m
 window.onbeforeunload = null;
 
@@ -12,6 +14,14 @@ socket.on('connect',()=>{
 
 socket.on('chain-of-action',(msg:any)=>{
   console.log(msg)
+  const playPauseBtn = document.querySelector('#play-pause-button') as HTMLElement;
+    if (playPauseBtn) {
+      sendmessage=false;
+      playPauseBtn.click();
+      sendmessage=true;
+      
+      
+    }
 })
 
 socket.on('VIDEO_ID',(videoId:any)=>{
@@ -82,61 +92,64 @@ const sendAction = (action: string, data?: any) => {
     chrome.runtime.sendMessage({type: "PLAYER_ACTION", action, data});
 }
 
-const observeTitleChanges = (targetNode: Element) => {
-  let lastTitle = targetNode.textContent?.trim();
+// const observeTitleChanges = (targetNode: Element) => {
+//   let lastTitle = targetNode.textContent?.trim();
 
-  const observer = new MutationObserver(() => {
-    const currentTitle = targetNode.textContent?.trim();
-    if (currentTitle && currentTitle !== lastTitle) {
-      lastTitle = currentTitle;
-      sendAction('songInfo', { title: currentTitle });
-    }
-  });
+//   const observer = new MutationObserver(() => {
+//     const currentTitle = targetNode.textContent?.trim();
+//     if (currentTitle && currentTitle !== lastTitle) {
+//       lastTitle = currentTitle;
+//       sendAction('songInfo', { title: currentTitle });
+//     }
+//   });
 
-  observer.observe(targetNode, { childList: true, subtree: true });
-};
+//   observer.observe(targetNode, { childList: true, subtree: true });
+// };
 
 const attachPlayerListeners = async () => {
     try {
       const playPauseBtn = await waitforElement('#play-pause-button');
       const nextBtn = await waitforElement('.next-button');
       const prevBtn = await waitforElement('.previous-button');
-      const titleEl = await waitforElement('.title');
+      // const titleEl = await waitforElement('.title');
   
       playPauseBtn.addEventListener('click', () => {
         const isPlaying = playPauseBtn.getAttribute('title')?.toLowerCase().includes('pause');
         sendAction(isPlaying ? 'pause' : 'play');
         let playAction:string=isPlaying?'pause' : 'play';
         if(playAction){
-          socket.emit('PLAYER_ACTION',playAction)
+          if(sendmessage){
+            socket.emit('PLAYER_ACTION',playAction)
+          }
+          
         }
       });
   
       nextBtn.addEventListener('click', () => {
-        sendAction('next');
-        socket.emit('PLAYER_ACTION','next')
+        // sendAction('next');
+        // socket.emit('PLAYER_ACTION','next')
       });
 
       prevBtn.addEventListener('click', () => {
-        sendAction('prev');
-        socket.emit('PLAYER_ACTION','prev')
+        // sendAction('prev');
+        // socket.emit('PLAYER_ACTION','prev')
       });
 
       const audio = document.querySelector('audio');
       if (audio) {
         audio.addEventListener('seeked', () => {
-          sendAction('seeked', { currentTime: audio.currentTime });
-          socket.emit('PLAYER_ACTION',{ currentTime: audio.currentTime })
+          // sendAction('seeked', { currentTime: audio.currentTime });
+          // socket.emit('PLAYER_ACTION',{ currentTime: audio.currentTime })
         });
       }
 
-      const sendSongInfo = () => {
-        const title = titleEl?.textContent?.trim() ?? '';
-        sendAction('songInfo', { title });
-        socket.emit('PLAYER_ACTION',{title})
-      };
-      sendSongInfo();
-      observeTitleChanges(titleEl);
+      // const sendSongInfo = () => {
+      //   const title = titleEl?.textContent?.trim() ?? '';
+      //   sendAction('songInfo', { title });
+      //   socket.emit('PLAYER_ACTION',{title})
+      // };
+      // sendSongInfo();
+      // observeTitleChanges(titleEl);
   
     } catch (error) {
       console.error('[YouTube Music Controller] Error:', error);
