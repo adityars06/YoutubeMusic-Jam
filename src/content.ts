@@ -2,7 +2,7 @@ import { io} from "socket.io-client";
 
 let sendmessage:boolean=true;
 
-//blocking window m
+//blocking window reload-didnt work
 window.onbeforeunload = null;
 
 
@@ -15,7 +15,12 @@ socket.on('connect',()=>{
 socket.on('chain-of-action',(msg:any)=>{
   console.log(msg)
   const playPauseBtn = document.querySelector('#play-pause-button') as HTMLElement;
+  const isCurrentlyPlaying = playPauseBtn.getAttribute('title')?.toLowerCase().includes('pause');
     if (playPauseBtn) {
+      if ((msg === 'play' && isCurrentlyPlaying) || (msg === 'pause' && !isCurrentlyPlaying)) {
+      console.log(`[INFO] Ignoring ${msg} - Already in correct state`);
+      return;
+      }
       sendmessage=false;
       playPauseBtn.click();
       sendmessage=true;
@@ -55,6 +60,8 @@ chrome.runtime.onMessage.addListener(
     }
   }
 );
+
+// Listen for messages from injected.js
 window.addEventListener("message", (event: MessageEvent) => {
   if (event.source !== window) return;
   if (!event.data || event.data.source !== "ytm-sniffer") return;
@@ -161,19 +168,7 @@ script.src = chrome.runtime.getURL("injected.js");
 (document.head || document.documentElement).appendChild(script);
 script.onload = () => script.remove(); // Optional: remove after injection
 
-// Listen for messages from injected.js
-window.addEventListener("message", (event: MessageEvent) => {
-  if (event.source !== window) return;
 
-  const data = event.data;
-  if (!data || data.source !== "ytm-sniffer") return;
 
-  const { videoId, full } = data.payload;
-  console.log("🎯 Intercepted video ID:", videoId);
-
-  // Store it globally for access from the console
-  (window as any).__ytmVideoId = videoId;
-  (window as any).__ytmPayload = full;
-});
   
   attachPlayerListeners();
