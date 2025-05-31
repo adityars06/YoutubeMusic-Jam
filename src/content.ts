@@ -67,6 +67,21 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+const simulatePlayClick = () => {
+  sendmessage=false;
+  const btn = document.querySelector('#play-pause-button') as HTMLElement;
+  btn.click();
+  setTimeout(() => (sendmessage = true), 100); // reset after small delay
+  
+};
+
+const simulatePauseClick = () => {
+  const btn = document.querySelector('#play-pause-button') as HTMLElement;
+  sendmessage=false;
+  btn.click();
+    setTimeout(() => (sendmessage = true), 100);
+};
+
 // Listen for messages from injected.js
 window.addEventListener("message", (event: MessageEvent) => {
   if (event.source !== window) return;
@@ -79,6 +94,11 @@ window.addEventListener("message", (event: MessageEvent) => {
   if(sendVideoMessage){
     if(Date.now()-start<4000){
       socket.emit("VIDEO_ID", { videoId, payload: full });
+      currentVideoId=videoId;
+      simulatePauseClick();
+      setTimeout(()=>{
+        simulatePlayClick()
+      },3400)
     }
     
     currentVideoId=videoId;
@@ -126,6 +146,7 @@ const sendAction = (action: string, data?: any) => {
 //   observer.observe(targetNode, { childList: true, subtree: true });
 // };
 
+
 const attachPlayerListeners = async () => {
     try {
       const playPauseBtn = await waitforElement('#play-pause-button');
@@ -144,6 +165,7 @@ const attachPlayerListeners = async () => {
           
         }
       });
+
   
       nextBtn.addEventListener('click', () => {
         // sendAction('next');
