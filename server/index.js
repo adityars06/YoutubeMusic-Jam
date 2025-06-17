@@ -17,7 +17,6 @@ io.on('connection', (socket) => {
     socket.on('join-room', (roomId) => {
         socket.join(roomId);
         id = roomId;
-        console.log(`${roomId} - ${socket}`);
     });
     socket.on('PLAYER_ACTION', (msg) => {
         socket.to(id).emit('chain-of-action', msg);
@@ -25,9 +24,8 @@ io.on('connection', (socket) => {
     socket.on("VIDEO_ID",(msg)=>{
         const {videoId}= msg;
         socket.to(id).emit('VIDEO_ID',videoId)
-        console.log(videoId)
     })
 });
 httpServer.listen(port, () => {
-    console.log("listening on port 3000");
+    console.log(`listening on ${port}`);
 });

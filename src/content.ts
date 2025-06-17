@@ -9,7 +9,7 @@ let start:number;
 window.onbeforeunload = null;
 
 
-const socket= io("http://localhost:3000");
+const socket= io("https://youtubeparty.onrender.com");
 
 socket.on('connect',()=>{
   console.log('client is connected');
