@@ -9,7 +9,9 @@ let start:number;
 window.onbeforeunload = null;
 
 
-const socket= io("https://youtubeparty.onrender.com");
+const socket = io("https://youtubeparty.onrender.com", {
+  transports: ['websocket'],
+});
 
 socket.on('connect',()=>{
   console.log('client is connected');
