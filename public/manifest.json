@@ -13,7 +13,8 @@
 
   "host_permissions": [
     "https://www.youtube.com/*",
-    "https://music.youtube.com/*"
+    "https://music.youtube.com/*",
+    "https://youtubeparty.onrender.com/"
   ],
 
   "background": {
