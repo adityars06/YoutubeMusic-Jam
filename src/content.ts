@@ -1,5 +1,7 @@
 import { io} from "socket.io-client";
 
+const api:any = import.meta.env.VITE_BACKEND_URL;
+
 let sendmessage:boolean=true;
 // let sendVideoMessage:boolean=true;
 let currentVideoId:String|null=null;
@@ -9,7 +11,7 @@ let start:number;
 window.onbeforeunload = null;
 
 
-const socket = io("https://youtubeparty.onrender.com");
+const socket = io(api);
 
 socket.on('connect',()=>{
   console.log('client is connected');
