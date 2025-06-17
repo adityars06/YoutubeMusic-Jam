@@ -35,18 +35,20 @@ Monkey patching-tapping xhr reqs(hope it's fine XD)
 
 📦 Installation
 
-git clone https://github.com//youtubemusicparty.git
-cd youtubemusicparty
+git clone https://github.com/adityars06/YoutubeMusic-Jam.git
+
+cd YoutubeMusic-Jam
+
 npm install
+
 npm run build
-open manage chrome extension-> enable dev mode-> select unload pack-> drop the dist 
 
+open manage chrome extension-> enable dev mode-> select unload pack-> drop the dist file there
 
-
-📸 Screenshots
-
- Example of a synced party room interface
-
+---
+<img width="1279" alt="Screenshot 2025-06-18 at 3 29 16 AM" src="https://github.com/user-attachments/assets/6f4ce744-0667-46c1-9909-57e2b79c69a7" />
+<img width="1280" alt="Screenshot 2025-06-18 at 3 30 49 AM" src="https://github.com/user-attachments/assets/b164180e-4774-49f8-87d0-f80d04b7f4e8" />
+<img width="1280" alt="Screenshot 2025-06-18 at 3 31 10 AM" src="https://github.com/user-attachments/assets/9da90807-7eb8-453d-8bc3-8276a17376cd" />
 
 ---
 
@@ -55,6 +57,7 @@ open manage chrome extension-> enable dev mode-> select unload pack-> drop the d
 Pull requests are welcome! Here's how to get started:
 
 1. Fork the repo
+
 
 2. Create a branch: git checkout -b my-feature
 
