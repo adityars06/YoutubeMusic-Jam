@@ -1,7 +1,7 @@
 import { io} from "socket.io-client";
 
 let sendmessage:boolean=true;
-let sendVideoMessage:boolean=true;
+// let sendVideoMessage:boolean=true;
 let currentVideoId:String|null=null;
 let start:number;
 
@@ -34,19 +34,20 @@ socket.on('chain-of-action',(msg:any)=>{
 
 socket.on('VIDEO_ID',(videoId:any)=>{
   console.log(videoId)
-  sendVideoMessage=false;
+  // sendVideoMessage=false;
+
 
 
 if (currentVideoId !== videoId) {
+  localStorage.setItem('isSender',"false");
   console.log("Navigating to new song:", videoId);
   window.location.href = `https://music.youtube.com/watch?v=${videoId}`;
-  start= Date.now();
 } else {
   console.log("Already on the correct song:", videoId);
 }
   const roomId:any=localStorage.getItem('roomId')
   socket.emit('join-room', roomId);
-  sendVideoMessage=true;
+  // sendVideoMessage=true;
 })
 
 
@@ -86,23 +87,31 @@ const simulatePauseClick = () => {
 window.addEventListener("message", (event: MessageEvent) => {
   if (event.source !== window) return;
   if (!event.data || event.data.source !== "ytm-sniffer") return;
+  if(currentVideoId==null){start=Date.now()};
+  
 
   const { videoId, full } = event.data.payload;
   console.log("🎯 Intercepted video ID:", videoId);
+  if(currentVideoId!=videoId){start=Date.now()}
 
   // You can now send this to the backend using socket.io
-  if(sendVideoMessage){
+  
     if(Date.now()-start<4000){
       socket.emit("VIDEO_ID", { videoId, payload: full });
       currentVideoId=videoId;
+      const isSender: boolean = localStorage.getItem('isSender')!=="false";
+      if(isSender){
       simulatePauseClick();
       setTimeout(()=>{
         simulatePlayClick()
       },3400)
+      }
+      localStorage.removeItem('isSender');
+      
     }
     
-    currentVideoId=videoId;
-  }
+    // currentVideoId=videoId;
+  
   
 
   // Or store it globally for reuse
@@ -132,19 +141,7 @@ const sendAction = (action: string, data?: any) => {
     chrome.runtime.sendMessage({type: "PLAYER_ACTION", action, data});
 }
 
-// const observeTitleChanges = (targetNode: Element) => {
-//   let lastTitle = targetNode.textContent?.trim();
 
-//   const observer = new MutationObserver(() => {
-//     const currentTitle = targetNode.textContent?.trim();
-//     if (currentTitle && currentTitle !== lastTitle) {
-//       lastTitle = currentTitle;
-//       sendAction('songInfo', { title: currentTitle });
-//     }
-//   });
-
-//   observer.observe(targetNode, { childList: true, subtree: true });
-// };
 
 
 const attachPlayerListeners = async () => {
@@ -152,7 +149,7 @@ const attachPlayerListeners = async () => {
       const playPauseBtn = await waitforElement('#play-pause-button');
       const nextBtn = await waitforElement('.next-button');
       const prevBtn = await waitforElement('.previous-button');
-      // const titleEl = await waitforElement('.title');
+      
   
       playPauseBtn.addEventListener('click', () => {
         const isPlaying = playPauseBtn.getAttribute('title')?.toLowerCase().includes('pause');
@@ -168,31 +165,22 @@ const attachPlayerListeners = async () => {
 
   
       nextBtn.addEventListener('click', () => {
-        // sendAction('next');
-        // socket.emit('PLAYER_ACTION','next')
+        
         start=Date.now();
       });
 
       prevBtn.addEventListener('click', () => {
-        // sendAction('prev');
-        // socket.emit('PLAYER_ACTION','prev')
+        
       });
 
       const audio = document.querySelector('audio');
       if (audio) {
         audio.addEventListener('seeked', () => {
-          // sendAction('seeked', { currentTime: audio.currentTime });
-          // socket.emit('PLAYER_ACTION',{ currentTime: audio.currentTime })
+          
         });
       }
 
-      // const sendSongInfo = () => {
-      //   const title = titleEl?.textContent?.trim() ?? '';
-      //   sendAction('songInfo', { title });
-      //   socket.emit('PLAYER_ACTION',{title})
-      // };
-      // sendSongInfo();
-      // observeTitleChanges(titleEl);
+    
   
     } catch (error) {
       console.error('[YouTube Music Controller] Error:', error);
