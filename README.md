@@ -1,6 +1,7 @@
 🎉 YouTube Music Party
 
 YouTubeMusicParty is a real-time collaborative chrome extension that lets friends host and join virtual rooms to watch and listen to YouTubeMusic songs together in sync. Perfect for parties, hangouts, study groups, or just vibing with friends remotely!
+
 NOTE- It only works for premium users. Non premium user will not be able to change songs, they can only control playback!
 
 
