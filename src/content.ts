@@ -1,9 +1,9 @@
 import { io} from "socket.io-client";
 
-const api:any = import.meta.env.VITE_BACKEND_URL;
+
 
 let sendmessage:boolean=true;
-// let sendVideoMessage:boolean=true;
+let sendVideoMessage:boolean=true;
 let currentVideoId:String|null=null;
 let start:number;
 
@@ -11,7 +11,7 @@ let start:number;
 window.onbeforeunload = null;
 
 
-const socket = io(api);
+const socket = io("https://youtubeparty.onrender.com");
 
 socket.on('connect',()=>{
   console.log('client is connected');
@@ -36,7 +36,7 @@ socket.on('chain-of-action',(msg:any)=>{
 
 socket.on('VIDEO_ID',(videoId:any)=>{
   console.log(videoId)
-  // sendVideoMessage=false;
+  sendVideoMessage=false;
 
 
 
@@ -49,7 +49,7 @@ if (currentVideoId !== videoId) {
 }
   const roomId:any=localStorage.getItem('roomId')
   socket.emit('join-room', roomId);
-  // sendVideoMessage=true;
+  sendVideoMessage=true;
 })
 
 
@@ -97,6 +97,7 @@ window.addEventListener("message", (event: MessageEvent) => {
   if(currentVideoId!=videoId){start=Date.now()}
 
   // You can now send this to the backend using socket.io
+  if(sendVideoMessage){
     if(Date.now()-start<4000){
       socket.emit("VIDEO_ID", { videoId, payload: full });
       currentVideoId=videoId;
@@ -110,7 +111,10 @@ window.addEventListener("message", (event: MessageEvent) => {
       localStorage.setItem('isSender',"true");
   }
 
-  // currentVideoId=videoId;
+  }
+    
+
+  currentVideoId=videoId;
 
   // Or store it globally for reuse
   (window as any).__ytmVideoId = videoId;
