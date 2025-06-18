@@ -9,6 +9,14 @@ const YouTubeJam = () => {
 
   const handleCreateSession = () => {
     const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
+            if(tabs[0].id){
+                chrome.tabs.sendMessage(tabs[0].id,{
+                    type:'JOIN_ROOM',
+                    roomId:newCode
+                })
+            }
+        })
     setGeneratedCode(newCode);
     setJoinedRoom("");
     setShowJoinInput(false);
@@ -17,6 +25,14 @@ const YouTubeJam = () => {
 
   const handleJoinSession = () => {
     if (sessionCode.trim()) {
+      chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
+            if(tabs[0].id){
+                chrome.tabs.sendMessage(tabs[0].id,{
+                    type:'JOIN_ROOM',
+                    roomId:sessionCode.trim()
+                })
+            }
+        })
       setJoinedRoom(sessionCode.trim());
       setGeneratedCode("");
     }

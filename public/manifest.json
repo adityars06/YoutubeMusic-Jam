@@ -12,8 +12,7 @@
   },
 
   "permissions": [
-    "identity",
-    "storage",
+    "tabs",
     "scripting",
     "activeTab"
   ],
@@ -29,12 +28,12 @@
   },
 
   "content_scripts": [
-    {
-      "js": ["content.js"],
-      "matches": ["https://music.youtube.com/*", "https://www.youtube.com/*"]
-      
-    }
-  ],
+  {
+    "js": ["content.js"],
+    "matches": ["https://music.youtube.com/*", "https://www.youtube.com/*"],
+    "run_at": "document_idle"
+  }
+],
 
   "action": {
     "default_popup": "popup.html"

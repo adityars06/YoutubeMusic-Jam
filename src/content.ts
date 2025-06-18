@@ -97,7 +97,6 @@ window.addEventListener("message", (event: MessageEvent) => {
   if(currentVideoId!=videoId){start=Date.now()}
 
   // You can now send this to the backend using socket.io
-  
     if(Date.now()-start<4000){
       socket.emit("VIDEO_ID", { videoId, payload: full });
       currentVideoId=videoId;
@@ -108,13 +107,10 @@ window.addEventListener("message", (event: MessageEvent) => {
         simulatePlayClick()
       },3400)
       }
-      localStorage.removeItem('isSender');
-      
-    }
-    
-    // currentVideoId=videoId;
-  
-  
+      localStorage.setItem('isSender',"true");
+  }
+
+  // currentVideoId=videoId;
 
   // Or store it globally for reuse
   (window as any).__ytmVideoId = videoId;
